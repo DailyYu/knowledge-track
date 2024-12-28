@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.knowledge.track.mapper.KnowledgeDataMapper">
+    <resultMap id="BaseResultMap" type="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="dataset_id" jdbcType="INTEGER" property="datasetId" />
+        <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="difficulty" jdbcType="INTEGER" property="difficulty" />
+        <result column="master_level" jdbcType="INTEGER" property="masterLevel" />
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+        <result column="deleted_at" jdbcType="TIMESTAMP" property="deletedAt" />
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, dataset_id, group_name, title, difficulty, master_level, created_at, updated_at,
+    deleted_at
+    </sql>
+    <sql id="Blob_Column_List">
+        content
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from knowledge_data
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectList" resultMap="ResultMapWithBLOBs">
+        select
+            <include refid="Base_Column_List"/>
+            ,
+            <include refid="Blob_Column_List"/>
+        from knowledge_data
+        where deleted_at is null
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from knowledge_data
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        insert into knowledge_data (id, dataset_id, group_name,
+                                    title, difficulty, master_level,
+                                    created_at, updated_at, deleted_at,
+                                    content)
+        values (#{id,jdbcType=INTEGER}, #{datasetId,jdbcType=INTEGER}, #{groupName,jdbcType=VARCHAR},
+                #{title,jdbcType=VARCHAR}, #{difficulty,jdbcType=INTEGER}, #{masterLevel,jdbcType=INTEGER},
+                #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{deletedAt,jdbcType=TIMESTAMP},
+                #{content,jdbcType=LONGVARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        insert into knowledge_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="datasetId != null">
+                dataset_id,
+            </if>
+            <if test="groupName != null">
+                group_name,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="difficulty != null">
+                difficulty,
+            </if>
+            <if test="masterLevel != null">
+                master_level,
+            </if>
+            <if test="createdAt != null">
+                created_at,
+            </if>
+            <if test="updatedAt != null">
+                updated_at,
+            </if>
+            <if test="deletedAt != null">
+                deleted_at,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="datasetId != null">
+                #{datasetId,jdbcType=INTEGER},
+            </if>
+            <if test="groupName != null">
+                #{groupName,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="difficulty != null">
+                #{difficulty,jdbcType=INTEGER},
+            </if>
+            <if test="masterLevel != null">
+                #{masterLevel,jdbcType=INTEGER},
+            </if>
+            <if test="createdAt != null">
+                #{createdAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatedAt != null">
+                #{updatedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletedAt != null">
+                #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        update knowledge_data
+        <set>
+            <if test="datasetId != null">
+                dataset_id = #{datasetId,jdbcType=INTEGER},
+            </if>
+            <if test="groupName != null">
+                group_name = #{groupName,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="difficulty != null">
+                difficulty = #{difficulty,jdbcType=INTEGER},
+            </if>
+            <if test="masterLevel != null">
+                master_level = #{masterLevel,jdbcType=INTEGER},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletedAt != null">
+                deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        update knowledge_data
+        set dataset_id = #{datasetId,jdbcType=INTEGER},
+            group_name = #{groupName,jdbcType=VARCHAR},
+            title = #{title,jdbcType=VARCHAR},
+            difficulty = #{difficulty,jdbcType=INTEGER},
+            master_level = #{masterLevel,jdbcType=INTEGER},
+            created_at = #{createdAt,jdbcType=TIMESTAMP},
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+            deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+            content = #{content,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.knowledge.track.domain.dos.KnowledgeDataDO">
+        update knowledge_data
+        set dataset_id = #{datasetId,jdbcType=INTEGER},
+            group_name = #{groupName,jdbcType=VARCHAR},
+            title = #{title,jdbcType=VARCHAR},
+            difficulty = #{difficulty,jdbcType=INTEGER},
+            master_level = #{masterLevel,jdbcType=INTEGER},
+            created_at = #{createdAt,jdbcType=TIMESTAMP},
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+            deleted_at = #{deletedAt,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>
