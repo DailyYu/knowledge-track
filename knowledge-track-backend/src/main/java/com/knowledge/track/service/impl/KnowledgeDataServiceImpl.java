@@ -6,6 +6,7 @@ import com.knowledge.track.common.response.ResultResponse;
 import com.knowledge.track.converter.KnowledgeDataConverter;
 import com.knowledge.track.dao.KnowledgeDataDAO;
 import com.knowledge.track.domain.dos.KnowledgeDataDO;
+import com.knowledge.track.domain.dto.KnowledgeDataAddDTO;
 import com.knowledge.track.domain.dto.KnowledgeDataListDTO;
 import com.knowledge.track.domain.dto.KnowledgeDataUpdateDTO;
 import com.knowledge.track.domain.query.KnowledgeDataQuery;
@@ -45,6 +46,13 @@ public class KnowledgeDataServiceImpl implements KnowledgeDataService {
     public ResultResponse update(KnowledgeDataUpdateDTO dto) {
         KnowledgeDataDO knowledgeDataDO = knowledgeDataConverter.knowledgeUpdateDto2Do(dto);
         knowledgeDataDAO.updateById(knowledgeDataDO);
+        return ResultResponse.success(null);
+    }
+
+    @Override
+    public ResultResponse add(KnowledgeDataAddDTO dto) {
+        KnowledgeDataDO knowledgeDataDO = knowledgeDataConverter.knowledgeAddDto2Do(dto);
+        knowledgeDataDAO.add(knowledgeDataDO);
         return ResultResponse.success(null);
     }
 }

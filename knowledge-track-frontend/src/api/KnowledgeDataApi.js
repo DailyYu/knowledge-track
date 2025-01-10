@@ -4,7 +4,8 @@ import request from '../utils/request'
 const apiMap = {
   list: list,
   delete: deleteById,
-  update: update
+  update: update,
+  add: add
 }
 export default apiMap
 
@@ -31,6 +32,16 @@ function deleteById(id) {
 function update(params) {
   return request({
     url: '/knowledge/update',
+    method: 'post',
+    data: params
+  })
+}
+
+
+
+function add(params) {
+  return request({
+    url: '/knowledge/add',
     method: 'post',
     data: params
   })

@@ -2,10 +2,12 @@ package com.knowledge.track.controller;
 
 
 import com.knowledge.track.common.response.ResultResponse;
+import com.knowledge.track.domain.dto.KnowledgeDataAddDTO;
 import com.knowledge.track.domain.dto.KnowledgeDataListDTO;
 import com.knowledge.track.domain.dto.KnowledgeDataUpdateDTO;
 import com.knowledge.track.service.KnowledgeDataService;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,9 +29,14 @@ public class KnowledgeDataController {
     }
 
 
-    @PostMapping("update")
-    public ResultResponse update(@RequestBody KnowledgeDataUpdateDTO dto) {
+    @PostMapping("/update")
+    public ResultResponse update(@RequestBody @Valid KnowledgeDataUpdateDTO dto) {
         return knowledgeDataService.update(dto);
+    }
+
+    @PostMapping("/add")
+    public ResultResponse add(@RequestBody @Valid KnowledgeDataAddDTO dto) {
+        return knowledgeDataService.add(dto);
     }
 
 

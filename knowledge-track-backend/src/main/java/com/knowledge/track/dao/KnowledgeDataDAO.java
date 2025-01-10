@@ -37,5 +37,12 @@ public class KnowledgeDataDAO {
         knowledgeDataMapper.updateByPrimaryKeySelective(knowledgeDataDO);
     }
 
+    public void add(KnowledgeDataDO knowledgeDataDO) {
+        knowledgeDataDO.setCreatedAt(new Date());
+        knowledgeDataMapper.insertSelective(knowledgeDataDO);
+    }
+
+
+
 
 }

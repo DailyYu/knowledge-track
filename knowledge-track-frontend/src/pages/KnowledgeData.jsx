@@ -1,7 +1,7 @@
 // src/Pages/KnowledgeData.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Table, Button, Popconfirm, Rate, message, Form, Input, Select, Space, Row, Col } from 'antd';
+import { Table, Button, Popconfirm, Rate, message, Form, Input, Select, Space, Row, Col, Modal } from 'antd';
 import { StarOutlined, HeartOutlined } from '@ant-design/icons';
 import knowledgeApi from '../api/KnowledgeDataApi';
 import moment from 'moment';
@@ -27,6 +27,9 @@ const KnowledgeData = () => {
   });
 
   const [groupOptions, setGroupOptions] = useState([]);
+  // 新增状态管理
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
 
 
   // 表格处理代码
@@ -69,7 +72,6 @@ const KnowledgeData = () => {
       ...record,
       [field]: value,
     };
-    console.log(updatedRecord);
     knowledgeApi.update(updatedRecord).then(res => {
       if (res.data.code === 0) {
         message.success('更新成功');
@@ -142,6 +144,58 @@ const KnowledgeData = () => {
 
 
 
+  // 新增和编辑逻辑
+  const showModal = (record = null) => {
+    if (record) {
+      setEditingRecord(record);
+    } else {
+      setEditingRecord(null);
+    }
+    setIsModalVisible(true);
+  };
+
+  const handleModalOk = () => {
+    form.validateFields().then(values => {
+      if (Array.isArray(values.groupName)) {
+        values.groupName = values.groupName[0];
+      }
+      if (editingRecord) {
+        // 编辑逻辑
+        console.log({...editingRecord, ...values});
+        knowledgeApi.update({ ...editingRecord, ...values }).then(res => {
+          if (res.data.code === 0) {
+            message.success('更新成功');
+            loadKnowledgeData(pagination.current, pagination.pageSize);
+          } else {
+            message.error(res.data.message);
+          }
+        });
+      } else {
+        // 新增逻辑
+        console.log({...values, datasetId});
+        knowledgeApi.add({ ...values, datasetId }).then(res => {
+          if (res.data.code === 0) {
+            message.success('新增成功');
+            loadKnowledgeData(pagination.current, pagination.pageSize);
+          } else {
+            message.error(res.data.message);
+          }
+        });
+      }
+      setIsModalVisible(false);
+    });
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleEdit = (record) => {
+    showModal(record);
+  };
+
+
+
 
   const columns = [
     {
@@ -191,12 +245,6 @@ const KnowledgeData = () => {
       render: (createdAt) => createdAt ? moment(createdAt).format('YYYY-MM-DD HH:mm:ss') : '',
     },
     {
-      title: '更新时间',
-      dataIndex: 'updatedAt',
-      key: 'updated_at',
-      render: (updatedAt) => updatedAt ? moment(updatedAt).format('YYYY-MM-DD HH:mm:ss') : '',
-    },
-    {
       title: '操作',
       key: 'action',
       render: (_, record) => (
@@ -214,6 +262,18 @@ const KnowledgeData = () => {
       )
     }
   ];
+
+
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (editingRecord) {
+      form.setFieldsValue(editingRecord);
+    } else {
+      form.resetFields();
+    }
+  }, [editingRecord, form]);
+
 
   return (
     <div style={{ padding: 24, maxWidth: '80%', margin: '0 auto' }}>
@@ -247,9 +307,9 @@ const KnowledgeData = () => {
                 allowClear
               >
                 <Option value="">无</Option>
-                <Option value="1">1星</Option>
-                <Option value="2">2星</Option>
-                <Option value="3">3星</Option>
+                <Option value="1">1星(简单)</Option>
+                <Option value="2">2星(中等)</Option>
+                <Option value="3">3星(困难)</Option>
               </Select>
             </Form.Item>
           </Col>
@@ -263,9 +323,9 @@ const KnowledgeData = () => {
                 allowClear
               >
                 <Option value="">无</Option>
-                <Option value="1">1</Option>
-                <Option value="2">2</Option>
-                <Option value="3">3</Option>
+                <Option value="1">1星(未掌握)</Option>
+                <Option value="2">2星(部分掌握)</Option>
+                <Option value="3">3星(掌握)</Option>
               </Select>
             </Form.Item>
           </Col>
@@ -287,9 +347,11 @@ const KnowledgeData = () => {
               <Space>
                 <Button type="primary" onClick={handleSearch}>查询</Button>
                 <Button onClick={handleReset}>重置</Button>
+                <Button onClick={() => showModal()}>新增</Button>
               </Space>
             </Form.Item>
           </Col>
+          
         </Row>
       </Form>
       <Table
@@ -300,6 +362,55 @@ const KnowledgeData = () => {
         onChange={handleTableChange}
         rowKey="id"
       />
+
+      {/* 模态框和表单 */}
+      <Modal
+          title={editingRecord ? '编辑数据' : '新增数据'}
+          open={isModalVisible}
+          onOk={handleModalOk}
+          onCancel={handleCancel}
+        >
+          <Form form={form} layout="vertical">
+            <Form.Item name="groupName" label="分组" rules={[{ required: true, message: '请选择分组' }]}>
+              <Select
+                style={{ width: '100%' }}
+                mode="tags"
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                placeholder="请选择或输入分组"
+              >
+                {groupOptions.map(option => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="difficulty" label="难度">
+              <Select style={{ width: '100%' }} allowClear>
+                <Option value="">无</Option>
+                <Option value="1">1星(简单)</Option>
+                <Option value="2">2星(中等)</Option>
+                <Option value="3">3星(困难)</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item name="masterLevel" label="掌握程度">
+              <Select style={{ width: '100%' }} allowClear>
+                <Option value="">无</Option>
+                <Option value="1">1星(未掌握)</Option>
+                <Option value="2">2星(部分掌握)</Option>
+                <Option value="3">3星(掌握)</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+      </Modal>
+
     </div>
   );
 };

@@ -1,6 +1,7 @@
 package com.knowledge.track.service;
 
 import com.knowledge.track.common.response.ResultResponse;
+import com.knowledge.track.domain.dto.KnowledgeDataAddDTO;
 import com.knowledge.track.domain.dto.KnowledgeDataListDTO;
 import com.knowledge.track.domain.dto.KnowledgeDataUpdateDTO;
 
@@ -22,5 +23,8 @@ public interface KnowledgeDataService {
 
 
     ResultResponse update(KnowledgeDataUpdateDTO dto);
+
+
+    ResultResponse add(KnowledgeDataAddDTO dto);
 
 }
